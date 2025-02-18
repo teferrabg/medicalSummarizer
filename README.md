@@ -95,7 +95,7 @@ The API will be available at http://localhost:8000
 
 3. Run the container:
    ```
-   docker run -p 8000:8000 -v /path/to/your/notes:/app/notes -v $(pwd)/api-key.rtf:/app/api-key.rtf   -v $(pwd)/logs:/app/logs -v $(pwd)/feedback:/app/feedback medical-summarizer
+   docker run -p 8000:8000 -v $(pwd)/notes:/app/notes -v $(pwd)/api-key.rtf:/app/api-key.rtf   -v $(pwd)/logs:/app/logs -v $(pwd)/feedback:/app/feedback medical-summarizer
    ```
 
 ### API Documentation
