@@ -38,7 +38,6 @@ medicalSummarizer/
 ├── test-summarizer.py
 ├── requirements.txt
 ├── Dockerfile
-├── api-key.rtf
 └── notes/
     ├── note1.txt
     └── note2.txt
