@@ -90,7 +90,7 @@ The API will be available at http://localhost:8000
     ```
 2. Build the Docker image:
    ```
-   docker build -t medical-summarizer .
+   docker build -t medicalSummarizer .
    ```
 
 3. Run the container:
