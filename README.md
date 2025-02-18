@@ -35,7 +35,7 @@ The system consists of the following components:
 ```
 medicalSummarizer/
 ├── main.py
-├── test_main.py
+├── test-summarizer.py
 ├── requirements.txt
 ├── Dockerfile
 ├── api-key.rtf
