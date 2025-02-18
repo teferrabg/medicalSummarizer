@@ -51,8 +51,8 @@ medicalSummarizer/
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/medical-summarizer.git
-   cd medical-summarizer
+   git clone https://github.com/teferrabg/medicalSummarizer.git
+   cd medicalSummarizer
    ```
 
 2. Create a virtual environment:
