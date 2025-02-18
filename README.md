@@ -41,10 +41,7 @@ medicalSummarizer/
 ├── api-key.rtf
 └── notes/
     ├── note1.txt
-    ├── note2.txt
-    └── stroke_notes/
-        └── note1.txt
-        └── note2.txt
+    └── note2.txt
 ```
 
 ### Environment Setup
