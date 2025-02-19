@@ -1,6 +1,6 @@
 # Medical Note Summarization System
 
-A system that uses LLMs to generate summaries from medical note files.
+A system that uses LLMs to generate summaries from medical note text files.
 
 ## Architecture Overview
 
