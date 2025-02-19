@@ -66,7 +66,10 @@ medicalSummarizer/
    ```
    cp /path/to/your/api-key.rtf .
    ```
-
+5. Place your notes in a directory called notes:
+   ```
+   cp /path/to/your/notes/
+   ```
 
 ### Running the Application
 
