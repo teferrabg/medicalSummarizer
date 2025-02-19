@@ -20,7 +20,6 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        #"/app/logs/app.log"
         logging.FileHandler(f"{working_dir}/logs/app.log"),
         logging.StreamHandler()
     ]
@@ -28,8 +27,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Initialize FastAPI
-app = FastAPI(title="Medical Text Summarizer", 
-              description="API for summarizing medical texts using LLMs (gpt-4o)")
+app = FastAPI(title="Medical Note Summarizer",
+              description="API for summarizing medical notes using LLMs (gpt-4o)")
 
 # Load API key from RTF file
 try:
@@ -43,10 +42,10 @@ except Exception as e:
     raise
 
 class FileProcessRequest(BaseModel):
-    directory: str = Field(..., description="Directory containing medical text files")
+    directory: str = Field(..., description="Directory containing the medical notes")
     role: Optional[str] = Field(None, description="Clinical role (e.g., 'physician', 'nurse')")
     format: Optional[str] = Field(None, description="Summary format (e.g., 'brief', 'detailed')")
-    highlight_critical: bool = Field(True, description="Whether to highlight critical findings")
+    highlight_critical: bool = Field(True, description="Whether to highlight critical findings or not")
 
 class FeedbackRequest(BaseModel):
     summary_id: str = Field(..., description="ID of the summary")
@@ -62,7 +61,7 @@ class SummaryResponse(BaseModel):
     source_mappings: Optional[Dict[str, List[int]]] = None
 
 def read_text_file(file_path: str) -> str:
-    """Read content from a text file"""
+    #Read content from a text file
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             return file.read().strip()
@@ -71,7 +70,7 @@ def read_text_file(file_path: str) -> str:
         raise ValueError(f"Failed to read file {file_path}: {str(e)}")
 
 def get_text_files(directory: str) -> List[str]:
-    """Get all .txt files from the specified directory"""
+    #Get all .txt files from the specified directory
     if not os.path.exists(directory):
         raise ValueError(f"Directory not found: {directory}")
     
@@ -84,7 +83,7 @@ def get_text_files(directory: str) -> List[str]:
 def summarize_text(text: str, role: Optional[str] = None, 
                   format: Optional[str] = None, 
                   highlight_critical: bool = True) -> Dict[str, Any]:
-    """Summarize medical text using OpenAI GPT model"""
+    #Summarize medical text using OpenAI GPT model
     start_time = time.time()
     
     # Customize prompt based on role and format
@@ -106,15 +105,18 @@ def summarize_text(text: str, role: Optional[str] = None,
         )
         
         summary = response.choices[0].message['content'].strip()
-        
+
+        #get critical findings if present
         critical_findings = None
         if highlight_critical and "Critical Findings" in summary:
             parts = summary.split("Critical Findings")
             summary = parts[0].strip()
             critical_findings = [f.strip().strip("**").strip(":") for f in parts[1].strip().split('\n') if f.strip()]
-        
+
+        #create simple source mappings
         source_mappings = create_simple_source_mapping(text, summary)
-        
+
+        #log token usage
         tokens_used = {
             "prompt_tokens": response.usage.prompt_tokens,
             "completion_tokens": response.usage.completion_tokens,
@@ -144,7 +146,7 @@ def summarize_text(text: str, role: Optional[str] = None,
         raise HTTPException(status_code=500, detail=f"Summarization error: {str(e)}")
 
 def create_simple_source_mapping(source_text: str, summary: str) -> Dict[str, List[int]]:
-    """Create a simple mapping between summary sentences and source paragraphs"""
+    #Create a simple mapping between summary sentences and source paragraphs
     source_paragraphs = [p.strip() for p in source_text.split('\n') if p.strip()]
     summary_sentences = [s.strip() for s in summary.split('.') if s.strip()]
     
@@ -164,12 +166,12 @@ def create_simple_source_mapping(source_text: str, summary: str) -> Dict[str, Li
 
 @app.get("/health")
 def health_check():
-    """Health check endpoint"""
+    #Health check endpoint
     return {"status": "ok", "timestamp": datetime.now().isoformat()}
 
 @app.post("/summarize", response_model=List[SummaryResponse])
 def create_summaries(request: FileProcessRequest):
-    """Generate summaries from medical text files in the specified directory"""
+    #Generate summaries from medical text files in the specified directory
     logger.info(f"Processing text files from directory: {request.directory}")
     
     try:
@@ -205,7 +207,7 @@ def create_summaries(request: FileProcessRequest):
 
 @app.post("/feedback")
 def submit_feedback(feedback: FeedbackRequest):
-    """Store feedback about a generated summary"""
+    #Store feedback about a generated summary
     logger.info(f"Received feedback for summary {feedback.summary_id}: rating={feedback.rating}")
     
     feedback_data = {
@@ -214,12 +216,10 @@ def submit_feedback(feedback: FeedbackRequest):
         "comments": feedback.comments,
         "timestamp": datetime.now().isoformat()
     }
-    
-    #with open("feedback.jsonl", "a") as f:
-    #    f.write(json.dumps(feedback_data) + "\n")
+
     #get working directory
     working_dir = os.getcwd()
-    # "/app/feedback/feedback.jsonl"
+
     #create directory if it does not exist
     if not os.path.exists(f"{working_dir}/feedback"):
         os.makedirs(f"{working_dir}/feedback")
@@ -230,5 +230,5 @@ def submit_feedback(feedback: FeedbackRequest):
     return {"status": "feedback received", "feedback_id": f"fb_{int(time.time())}"}
 
 if __name__ == "__main__":
-    logger.info("Starting Medical Text Summarizer API")
+    logger.info("Starting Medical Note Summarizer API")
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
